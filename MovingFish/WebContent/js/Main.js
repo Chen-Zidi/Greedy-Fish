@@ -1,11 +1,10 @@
 var game = new Phaser.Game(800, 600, Phaser.AUTO);
 
 var actor;
-var fishes;
+var fishes1;
 var speed = 5;
 var fishHooks;
-var grass;
-var chaser;
+var grasses;
 
 var mainState = {
 
@@ -18,7 +17,6 @@ var mainState = {
 		game.load.image('fish3', 'assets/images/fish3.png');
 		game.load.image('fish4', 'assets/images/fish4.png');
 		game.load.image('fish5', 'assets/images/fish5.png');
-		game.load.image('chaser', 'assets/images/chaser.png');
 		game.load.image('fishHook', 'assets/images/fish_hook.png');
 		game.load.image('grass', 'assets/images/grass.png');
 		game.load.spritesheet('actor', 'assets/images/actor.png', 144, 108, 2);
@@ -30,56 +28,40 @@ var mainState = {
 		game.world.setBounds(0, 0, 5000, 500);
 		game.physics.startSystem(Phaser.Physics.ARCADE);
 
-		fishes = game.add.group();
 		fishHooks = game.add.group();
-		grass = game.add.group();
+		grasses = game.add.group();
+		fishes1 = game.add.group();
 
 		actor = game.add.sprite(100, 245, 'actor');
-		chaser = game.add.sprite(10, 0, 'chaser');
-		for (var i = 0; i < 7; i++) {
-			var block = game.add.sprite(
-					Math.ceil((Math.random() * 5000 + 100)), 0, 'fishHook');
-			fishHooks.add(block);
-			game.physics.arcade.enable(block);
 
-		}
+		this.generateFishHook();
 
-		for (var i = 0; i < 15; i++) {
-			var block = game.add.sprite(
-					Math.ceil((Math.random() * 5000 + 100)), 440, 'grass');
-			grass.add(block);
-			game.physics.arcade.enable(block);
+		this.generateGrass();
 
-		}
+		this.generateFish1();
 
 		actor.animations.add('swim');
 		actor.animations.play('swim', 10, true);
 
 		game.physics.arcade.enable(actor);
-		game.physics.arcade.enable(chaser);
 
 		game.camera.follow(actor);
 	},
 
 	update : function() {
 
-		chaser.x = chaser.x + 4;
+		actor.x = actor.x + 5;
+		actor.y = actor.y + 2;
 
-		if (game.input.keyboard.isDown(Phaser.Keyboard.UP)) {
+		if (game.input.keyboard.isDown(Phaser.Keyboard.SPACEBAR)) {
 			actor.y -= speed;
-		} else if (game.input.keyboard.isDown(Phaser.Keyboard.DOWN)) {
-
-			actor.y += speed;
 		}
 
-		if (game.input.keyboard.isDown(Phaser.Keyboard.RIGHT)) {
-			actor.x += speed;
-		}
-
-		game.physics.arcade.overlap(actor, grass, this.hitBlock, null, this);
+		game.physics.arcade.overlap(actor, grasses, this.hitBlock, null, this);
 		game.physics.arcade
 				.overlap(actor, fishHooks, this.hitBlock, null, this);
-		game.physics.arcade.overlap(actor, chaser, this.hitBlock, null, this);
+		game.physics.arcade.overlap(actor, fishes1, this.fishCollision1, null,
+				this);
 
 		if (actor.y < 0) {
 			actor.y = 0;
@@ -89,12 +71,55 @@ var mainState = {
 		}
 
 		game.world.wrap(actor, 0, true);
-		game.world.wrap(chaser, 0, true);
+	},
+
+	generateFishHook : function() {
+
+		for (var i = 0; i < 15; i++) {
+			var topPosition = 0 - Math.random() * 150;
+			var xPosition = Math.random() * 5000 + 100;
+			var block = game.add.sprite(Math.ceil(xPosition), Math
+					.ceil(topPosition), 'fishHook');
+			fishHooks.add(block);
+			game.physics.arcade.enable(block);
+
+		}
+	},
+
+	generateGrass : function() {
+		for (var i = 0; i < 15; i++) {
+			var bottomPosition = 440 - Math.random() * 50;
+			var xPosition = Math.random() * 5000 + 100;
+			var block = game.add.sprite(Math.ceil(xPosition), Math
+					.ceil(bottomPosition), 'grass');
+			grasses.add(block);
+			game.physics.arcade.enable(block);
+
+		}
+	},
+
+	generateFish1 : function() {
+
+		for (var i = 0; i < 8; i++) {
+			var fish1 = game.add.sprite(
+					Math.ceil((Math.random() * 5000 + 100)), Math.ceil(Math
+							.random() * 500), 'fish1');
+			fishes1.add(fish1);
+			game.physics.arcade.enable(fish1);
+
+		}
+
 	},
 
 	hitBlock : function() {
 
 		this.restart();
+	},
+
+	fishCollision1 : function(actor, fish1) {
+
+		fish1.destroy();
+
 	},
 
 	restart : function() {
