@@ -1,5 +1,3 @@
-var game = new Phaser.Game(800, 600, Phaser.AUTO);
-
 var actor;
 var fishes1;
 var speed = 5;
@@ -133,8 +131,6 @@ var mainState = {
 
 };
 
-game.state.add('main', mainState);
-game.state.start('main');
 
 // https://www.iconfont.cn/search/index?q=%E6%B0%B4%E8%8D%89
 // https://www.iconfont.cn/search/index?q=%E9%B1%BC%E9%92%A9
